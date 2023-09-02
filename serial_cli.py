@@ -1,6 +1,6 @@
 import serial
-import time
 import sys
+import time
 from tinydb import TinyDB
 
 import remote_cli
