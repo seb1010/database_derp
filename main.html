@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> Sebs Room Temp </title>
+
+  </head>
+  <body>
+
+    <h1>This is seb's page</h1>
+
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+
+    //api request things
+    const API_KEY = '$2b$10$yU08woB3u4X2OOjKOdHreeln42y5XLasfWsxhHmrug3qI9gTOdFlS';
+    const BIN_ID = '64f2bda4d972192679bd648b';
+    //const BIN_ID = '64f38e148d92e126ae66444c'; // for debug only
+    const API_URL = 'https://api.jsonbin.io/v3/b/';
+    
+
+    let req = new XMLHttpRequest();
+      req.onreadystatechange = () => {
+        if (req.readyState == XMLHttpRequest.DONE) {
+          new_data = convert_data(req.responseText);
+          graph_data(new_data);
+        }
+      };
+
+      req.open("GET", API_URL.concat(BIN_ID), true);
+      req.setRequestHeader("X-Access-Key", API_KEY);
+      req.send();
+
+      // converting data
+      function convert_data(input_json){
+        console.log(input_json);
+        const arr = JSON.parse(input_json);
+        console.log(arr.record[0].temp_c);
+        console.log(arr.record.length);
+        var room_data = [];
+        for (let i=0; i < arr.record.length; i++) {
+          mr_temp = arr.record[i].temp_c;
+          mr_time = arr.record[i].time;
+          if(mr_temp > 25 || mr_temp < 15){mr_temp = 15}
+          room_data.push({x: mr_time, y: mr_temp})
+        }
+        console.log(room_data);
+        return room_data;
+      }
+
+      // graphing things
+      function graph_data(input_data){
+
+        const ctx = document.getElementById('myChart');
+
+        const data = {
+          datasets: [{
+            label: 'sebs room temperture',
+            data: input_data,
+            backgroundColor: 'rgb(255,90,132)',
+            yAxisId: 'y2',
+          }]
+        };
+
+        const chart_config = {
+          type: 'scatter',
+          data: data,
+          options: {
+            scales: {
+              x: {
+                type: 'linear',
+                position: 'bottom',
+               }
+            
+            }
+          }
+       };
+
+      new Chart(ctx, chart_config);
+      }
+
+    </script>
+  </body>
+</html>
